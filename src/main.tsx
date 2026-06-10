@@ -12,6 +12,6 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/" element={<Index />} />
         <Route path="/obs" element={<OBSMode />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>
 );
