@@ -2,7 +2,7 @@
 
 <br/>
 
-<img src="assets/logo-white.svg" alt="StreamVault" width="560" />
+<img src="public/assets/logo-white.svg" alt="StreamVault" width="560" />
 
 <br/>
 <br/>
