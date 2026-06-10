@@ -3,11 +3,29 @@ import { motion } from "framer-motion";
 import { Bookmark, Flag, Heart, Pin, Repeat2 } from "lucide-react";
 import type { ChatMessage as Msg, MessageSegment } from "@/types";
 import { PlatformBadge } from "@/components/ui/PlatformBadge";
-import { PlatformLogo } from "@/components/ui/PlatformLogo";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { UserBadges } from "@/components/ui/UserBadges";
 import { PLATFORM_META } from "@/lib/platforms";
 import { formatTime, formatNumber } from "@/lib/formatters";
+
+// ── Platform username colors ───────────────────────────────────────────────────
+
+const PLATFORM_USERNAME_COLOR: Record<string, string> = {
+  twitch: "#8956FB",
+  kick: "#00E701",
+  x: "#1DA1F2",
+};
+
+// ── Premium animated gradient (subscribers + verified) ────────────────────────
+
+const PREMIUM_GRADIENT_STYLE: React.CSSProperties = {
+  background: "linear-gradient(90deg, #1DA1F2, #00E701, #8956FB, #1DA1F2)",
+  backgroundSize: "300% 100%",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  backgroundClip: "text",
+  animation: "premiumGradient 1.8s linear infinite",
+};
 
 // ── Animation ──────────────────────────────────────────────────────────────────
 
@@ -19,17 +37,6 @@ const variants = {
     scale: 1,
     transition: { duration: 0.16, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   },
-};
-
-// ── Premium username gradient (subscribers + verified users) ───────────────────
-
-const PREMIUM_GRADIENT_STYLE: React.CSSProperties = {
-  background: "linear-gradient(90deg, #1DA1F2, #00E701, #8956FB, #1DA1F2)",
-  backgroundSize: "300% 100%",
-  WebkitBackgroundClip: "text",
-  WebkitTextFillColor: "transparent",
-  backgroundClip: "text",
-  animation: "premiumGradient 1.8s linear infinite",
 };
 
 // ── Segment renderer ───────────────────────────────────────────────────────────
@@ -67,6 +74,7 @@ function ChatMessageInner({ message, showTimestamp, showBadges, fontSize, compac
   const isEvent = message.isSubEvent || message.isFollowEvent;
   const padY = compact ? 6 : 10;
   const isPremium = message.author.isSubscriber || message.author.isVerified;
+  const usernameColor = PLATFORM_USERNAME_COLOR[message.platform] ?? "#EEEEF5";
 
   let extraStyle: React.CSSProperties = {};
   let banner: React.ReactNode = null;
@@ -101,48 +109,56 @@ function ChatMessageInner({ message, showTimestamp, showBadges, fontSize, compac
 
       <div className="min-w-0 flex-1">
         {banner}
-        <div className="flex items-center gap-1.5">
-          {showBadges && <PlatformBadge platform={message.platform} />}
 
-          {/* Username: premium = animated gradient, normal = white + platform logo */}
-          <span className="inline-flex items-center gap-1">
+        {/* Single line: badge · username · user-badges · timestamp · message */}
+        <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0">
+          {showBadges && (
+            <span className="inline-flex items-center self-center">
+              <PlatformBadge platform={message.platform} />
+            </span>
+          )}
+
+          {/* Username */}
+          {isPremium ? (
             <span
-              className="cursor-pointer truncate font-semibold transition-[filter] hover:brightness-125"
-              style={isPremium ? { ...PREMIUM_GRADIENT_STYLE, fontSize: 13 } : { color: "#EEEEF5", fontSize: 13 }}
+              className="cursor-pointer font-semibold transition-[filter] hover:brightness-125"
+              style={{ ...PREMIUM_GRADIENT_STYLE, fontSize: 13, flexShrink: 0 }}
             >
               {message.author.displayName}
             </span>
-            {!isPremium && (
-              <span className="flex-shrink-0 opacity-50">
-                <PlatformLogo platform={message.platform} size={10} />
-              </span>
-            )}
-          </span>
-
-          {showBadges && (
-            <UserBadges badges={message.author.badges} platform={message.platform} />
-          )}
-          {showTimestamp && (
-            <span className="ml-auto font-mono text-2xs text-text-disabled">
-              {formatTime(message.timestamp)}
+          ) : (
+            <span
+              className="cursor-pointer font-semibold transition-[filter] hover:brightness-125"
+              style={{ color: usernameColor, fontSize: 13, flexShrink: 0 }}
+            >
+              {message.author.displayName}
             </span>
           )}
-        </div>
 
-        <div
-          className="mt-0.5 break-words text-text-primary"
-          style={{
-            fontSize,
-            lineHeight: 1.55,
-            fontStyle: isEvent ? "italic" : undefined,
-            color: message.isDeleted ? "#505068" : undefined,
-            textDecoration: message.isDeleted ? "line-through" : undefined,
-          }}
-        >
+          {/* User role badges */}
+          {showBadges && (
+            <span className="inline-flex items-center self-center">
+              <UserBadges badges={message.author.badges} platform={message.platform} />
+            </span>
+          )}
+
+          {/* Colon separator */}
+          <span className="font-semibold text-text-muted" style={{ fontSize: 13 }}>:</span>
+
+          {/* Message inline */}
           {message.isDeleted ? (
-            "🔇 Message removed"
+            <span className="text-text-muted line-through" style={{ fontSize }}>
+              🔇 Message removed
+            </span>
           ) : (
-            <>
+            <span
+              className="break-words text-text-primary"
+              style={{
+                fontSize,
+                lineHeight: 1.55,
+                fontStyle: isEvent ? "italic" : undefined,
+              }}
+            >
               {isEvent && <span className="mr-1">{message.isSubEvent ? "⭐" : "🔔"}</span>}
               {message.content.segments.map((s, i) => (
                 <Segment key={i} seg={s} color={meta.color} />
@@ -155,7 +171,14 @@ function ChatMessageInner({ message, showTimestamp, showBadges, fontSize, compac
                   )}
                 </span>
               )}
-            </>
+            </span>
+          )}
+
+          {/* Timestamp — pushed to end */}
+          {showTimestamp && (
+            <span className="ml-auto font-mono text-2xs text-text-disabled self-center">
+              {formatTime(message.timestamp)}
+            </span>
           )}
         </div>
       </div>
