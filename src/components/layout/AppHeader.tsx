@@ -30,8 +30,8 @@ export function AppHeader({ statuses, latency, onOpenSettings, onOpenObs }: Prop
         <img
           src={`${import.meta.env.BASE_URL}assets/logo-white.svg`}
           alt="StreamVault"
-          height={38}
-          style={{ height: 38, width: "auto" }}
+          height={58}
+          style={{ height: 58, width: "auto" }}
           draggable={false}
         />
         <span className="h-4 w-px bg-border-subtle" />
