@@ -1,18 +1,15 @@
 import type { Platform } from "@/types";
 
+const BASE = import.meta.env.BASE_URL;
+
 interface Props {
   platform: Platform;
-  /** Size in px — default 16 */
   size?: number;
   className?: string;
 }
 
-/**
- * Renders the official platform logo from /assets/.
- * Falls back to a colored letter if the asset fails to load.
- */
 export function PlatformLogo({ platform, size = 16, className }: Props) {
-  const src = `/assets/logo-${platform}.svg`;
+  const src = `${BASE}assets/logo-${platform}.svg`;
   const alt = platform === "x" ? "X (Twitter)" : platform.charAt(0).toUpperCase() + platform.slice(1);
 
   return (
