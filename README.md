@@ -11,7 +11,7 @@ https://github.com/user-attachments/assets/live-demo.mp4
 
 <br/>
 
-### [▶ Live Demo](https://your-username.github.io/streamvault)
+### [▶ Live Demo](https://petrnzi.github.io/streamvault/)
 
 <br/>
 
