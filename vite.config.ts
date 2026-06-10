@@ -4,10 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  publicDir: "assets",
   plugins: [react(), tailwindcss(), tsconfigPaths()],
   server: { port: 5173 },
-  build: {
-    assetsDir: "assets",
-  },
-  publicDir: "assets",  // ← aggiungi questa
 });
