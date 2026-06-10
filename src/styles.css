@@ -1,0 +1,142 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+@import "@fontsource/geist/400.css";
+@import "@fontsource/geist/500.css";
+@import "@fontsource/geist/600.css";
+@import "@fontsource/geist/700.css";
+@import "@fontsource/geist-mono/400.css";
+@import "@fontsource/geist-mono/500.css";
+@import "@fontsource/geist-mono/700.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Geist", "SF Pro Display", system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-void: #05050A;
+  --color-surface: #0C0C14;
+  --color-elevated: #111119;
+  --color-overlay: #16161F;
+
+  --color-border-subtle: #1A1A26;
+  --color-border-default: #222230;
+  --color-border-strong: #2E2E40;
+
+  --color-twitch: #9146FF;
+  --color-twitch-muted: rgba(145,70,255,0.12);
+  --color-twitch-glow: rgba(145,70,255,0.25);
+
+  --color-kick: #53FC18;
+  --color-kick-muted: rgba(83,252,24,0.10);
+  --color-kick-glow: rgba(83,252,24,0.20);
+
+  --color-x: #E7E9EA;
+  --color-x-muted: rgba(231,233,234,0.08);
+  --color-x-glow: rgba(231,233,234,0.12);
+
+  --color-text-primary: #EEEEF5;
+  --color-text-secondary: #9090A8;
+  --color-text-muted: #505068;
+  --color-text-disabled: #303048;
+
+  --color-gold: #F0A500;
+  --color-live: #FF3B3B;
+  --color-success: #00CC7A;
+
+  --color-hype-low: #53FC18;
+  --color-hype-mid: #F0A500;
+  --color-hype-high: #FF3B3B;
+
+  /* Shadcn semantic mappings (dark always) */
+  --color-background: var(--color-void);
+  --color-foreground: var(--color-text-primary);
+  --color-card: var(--color-elevated);
+  --color-card-foreground: var(--color-text-primary);
+  --color-popover: var(--color-overlay);
+  --color-popover-foreground: var(--color-text-primary);
+  --color-primary: var(--color-twitch);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-elevated);
+  --color-secondary-foreground: var(--color-text-primary);
+  --color-muted: var(--color-elevated);
+  --color-muted-foreground: var(--color-text-secondary);
+  --color-accent: var(--color-overlay);
+  --color-accent-foreground: var(--color-text-primary);
+  --color-destructive: var(--color-live);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--color-border-subtle);
+  --color-input: var(--color-border-default);
+  --color-ring: var(--color-twitch);
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border-subtle);
+    box-sizing: border-box;
+  }
+  html, body, #app, #root {
+    background-color: var(--color-void);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    margin: 0;
+  }
+  ::selection {
+    background: rgba(145, 70, 255, 0.3);
+    color: var(--color-text-primary);
+  }
+  :focus-visible {
+    outline: 2px solid rgba(145, 70, 255, 0.6);
+    outline-offset: 2px;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #222230 transparent;
+  }
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #222230; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9146FF; }
+}
+
+@keyframes pulse-live {
+  0% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.5); }
+  70% { box-shadow: 0 0 0 6px rgba(255, 59, 59, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0); }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+@keyframes hype-pulse {
+  0%, 100% { border-color: rgba(255, 59, 59, 0.6); box-shadow: 0 0 24px rgba(255,59,59,0.25); }
+  50% { border-color: rgba(255, 59, 59, 0.15); box-shadow: 0 0 8px rgba(255,59,59,0.05); }
+}
+
+@utility pulse-live { animation: pulse-live 1.5s infinite; }
+@utility pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+@utility pulse-dot-fast { animation: pulse-dot 0.8s ease-in-out infinite; }
+@utility hype-pulse { animation: hype-pulse 0.6s alternate infinite; }
+
+@utility text-2xs { font-size: 10px; line-height: 1.2; }
+
+/* Premium username gradient animation */
+@keyframes premiumGradient {
+  0% { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
