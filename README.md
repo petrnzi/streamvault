@@ -1,3 +1,4 @@
+```md
 <div align="center">
 
 <br/>
@@ -27,7 +28,7 @@ https://github.com/user-attachments/assets/live-demo.mp4
 
 ## What is StreamVault?
 
-StreamVault is a **unified real-time chat aggregator** built for professional streamers who multistream across platforms. Instead of managing three separate browser tabs, StreamVault brings every voice into a single, dark-premium interface — with live analytics that tell you exactly what your audience is feeling.
+StreamVault is a **unified real-time chat aggregator** built for professional streamers who multistream across platforms. Instead of managing three separate browser tabs, StreamVault brings every voice into a single, dark-premium interface — with live analytics that tell you *exactly* what your audience is feeling.
 
 > **One window. Every voice.** Built for the [MarketBubble $10k Vibe Code Challenge](https://x.com/marketbubble).
 
@@ -55,23 +56,24 @@ StreamVault fixes this with:
 - Real-time messages from **Twitch**, **Kick**, and **X**
 - Platform logo on every message — instant source recognition
 - Platform filter toggles (show/hide per source)
-- Keyword search with debounce
+- Keyword search with 150ms debounce
 - Auto-scroll with "N new messages" badge when paused
 - First-time chatter detection & highlighting
-- Sub/follow event banners
+- Sub/follow event banners with gold gradient
 - @mention auto-highlight in platform color
-- Animated gradient username for **subscribers & verified** users
+- Animated gradient username for **subscribers & verified** users (`#1DA1F2 → #00E701 → #8956FB`)
+- White username + platform logo for regular users
 
 </td>
 <td width="50%" valign="top">
 
 ### 📊 Stream Intelligence Panel
-- **Hype Meter** — SVG gauge, spring-animated needle
-- **Chat Velocity** — messages/min with sparkline chart
-- **Platform Split** — proportional activity bar
-- **Trending Words** — top 5 keywords, last 30 seconds
-- **Active Users** — unique chatters, last 60 seconds
-- Updates every second, zero latency
+- **Hype Meter** — SVG semicircle gauge, spring-animated needle
+- **Chat Velocity** — messages/min with 60s sparkline history chart
+- **Platform Split** — proportional animated activity bar
+- **Trending Words** — top 5 keywords from last 30 seconds
+- **Active Users** — unique chatters in last 60 seconds
+- Updates every second, zero external API calls
 
 </td>
 </tr>
@@ -79,20 +81,23 @@ StreamVault fixes this with:
 <td width="50%" valign="top">
 
 ### 🎬 OBS Browser Source (`/obs`)
-- Transparent background for stream overlays
-- Three styles: `pill`, `line`, `ghost`
-- Per-message TTL auto-expire
+- Fully transparent background for stream overlays
+- Three visual styles: `pill`, `line`, `ghost`
+- Per-message TTL auto-expire (default 25s)
 - Fully configurable via URL params
+- GPU-composited for zero performance impact
 
 </td>
 <td width="50%" valign="top">
 
-### ⚙️ Settings
-- Font size slider, compact mode
-- Toggle timestamps & badges
+### ⚙️ Settings & Config
+- Font size slider (11–20px), live preview
+- Compact mode for high-density feeds
+- Toggle timestamps & user badges
 - Max messages cap (100 / 200 / 500)
-- X API Mode with Bearer Token
-- CSV export of chat log
+- X API Mode with Bearer Token (session-only, never stored)
+- CSV export of full chat log
+- All settings persisted in localStorage
 
 </td>
 </tr>
@@ -103,25 +108,36 @@ StreamVault fixes this with:
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────────┐
-│                    StreamVault                       │
-├──────────────────────────────────────────────────────┤
-│  MockChatEngine                                      │
-│  Twitch 60% ──┐                                      │
-│  Kick    30% ──┼──► generateMessage() ──► listeners  │
-│  X       10% ──┘         ↑                           │
-│                    parseMessage() + colorUtils()     │
-├──────────────────────────────────────────────────────┤
-│  useMessages(maxMessages)  ←  subscriber hook        │
-├───────────────────┬──────────────────────────────────┤
-│  useChatAnalytics │  ChatFeed + ChatMessage           │
-│  ┌─────────────┐  │  ┌──────────────────────────┐    │
-│  │ Hype Meter  │  │  │ Framer Motion enter anim │    │
-│  │ Velocity    │  │  │ Platform logo badge      │    │
-│  │ Keywords    │  │  │ Premium gradient username│    │
-│  │ Active users│  │  │ Auto-scroll / pause      │    │
-│  └─────────────┘  │  └──────────────────────────┘    │
-└───────────────────┴──────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                         StreamVault                                 │
+├─────────────────────────────────────────────────────────────────────┤
+│  MockChatEngine  (src/engine/)                                      │
+│  ┌──────────────────────────────────────────────────────────────┐   │
+│  │  Twitch 60% ──┐                                              │   │
+│  │  Kick    30% ──┼──► generateMessage() ──► Listener.forEach() │   │
+│  │  X       10% ──┘         ↑                                   │   │
+│  │                    parseMessage()  +  colorForUsername()     │   │
+│  │                    XSS-safe URL validation                   │   │
+│  │                    Burst pattern: 90–120s interval, 15s peak │   │
+│  └──────────────────────────────────────────────────────────────┘   │
+│                          │                                          │
+│               useMessages(maxMessages)                              │
+│                          │                                          │
+│          ┌───────────────┴────────────────┐                         │
+│          │                                │                         │
+│   useChatAnalytics()               ChatFeed + ChatMessage           │
+│   ┌───────────────────┐             ┌───────────────────────┐       │
+│   │ Hype Meter        │             │ Framer Motion enter   │       │
+│   │ Velocity sparkline│             │ Platform logo badge   │       │
+│   │ Platform split    │             │ Premium gradient name │       │
+│   │ Top keywords      │             │ Action bar on hover   │       │
+│   │ Active users      │             │ Auto-scroll / pause   │       │
+│   └───────────────────┘             └───────────────────────┘       │
+│                                                                     │
+│  Routes:  / (main app)  ·  /obs (OBS overlay)                      │
+│                                                                     │
+│  Replace MockChatEngine → Socket.io backend for live platform APIs  │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -144,20 +160,41 @@ StreamVault fixes this with:
 ## Quick Start
 
 ```bash
-git clone https://github.com/your-username/streamvault.git
+git clone https://github.com/petrnzi/streamvault.git
 cd streamvault
 npm install
 npm run dev
 # → http://localhost:5173
 ```
 
+```bash
+# Production build
+npm run build
+npm run preview
+```
+
+### Optional: X (Twitter) API
+
+```bash
+cp .env.example .env.local
+# Add your Bearer Token:
+# VITE_X_BEARER_TOKEN=your_token_here
+```
+
+Then open **Settings → X Integration → API Mode**.
+
+> **Security:** The Bearer Token lives only in memory for the session. Never written to localStorage.
+
 ---
 
-## OBS Setup
+## OBS Browser Source Setup
 
-```
-/obs?platforms=twitch,kick,x&ttl=25&fontSize=15&style=pill
-```
+1. In OBS → **Add Source → Browser Source**
+2. URL: `https://petrnzi.github.io/streamvault/#/obs`
+3. Width: `400` · Height: `800`
+4. ✅ **Shutdown source when not visible**
+
+**URL Parameters:**
 
 | Param | Default | Options |
 |-------|---------|---------|
@@ -166,12 +203,68 @@ npm run dev
 | `fontSize` | `15` | px |
 | `style` | `pill` | `pill` · `line` · `ghost` |
 | `position` | `bottom` | `bottom` · `top` |
+| `maxMessages` | `30` | count |
+
+---
+
+## Project Structure
+
+```
+streamvault/
+├── public/assets/          # Platform logos + brand assets
+├── src/
+│   ├── components/
+│   │   ├── chat/           # ChatFeed, ChatMessage
+│   │   ├── intelligence/   # HypeMeter, VelocityCard, PlatformSplit,
+│   │   │                   # TopKeywords, ActiveUsers
+│   │   ├── layout/         # AppHeader, LeftSidebar, IntelligencePanel,
+│   │   │                   # StatusBar, SettingsPanel
+│   │   └── ui/             # PlatformBadge, PlatformLogo, UserAvatar,
+│   │                       # UserBadges, SwitchToggle
+│   ├── engine/
+│   │   └── MockChatEngine.ts   # Realistic burst-pattern simulator
+│   ├── hooks/
+│   │   ├── useChatAnalytics.ts
+│   │   ├── useDebounce.ts
+│   │   ├── useInterval.ts
+│   │   ├── useMessages.ts
+│   │   └── useSettings.ts
+│   ├── lib/
+│   │   ├── colorUtils.ts   # Username → deterministic HSL color
+│   │   ├── formatters.ts   # Time, number, duration
+│   │   ├── platforms.ts    # Platform metadata
+│   │   ├── textParser.ts   # XSS-safe message segment parser
+│   │   └── utils.ts        # cn() Tailwind helper
+│   ├── pages/
+│   │   ├── Index.tsx       # Main dashboard
+│   │   └── OBSMode.tsx     # OBS overlay
+│   └── types/
+│       ├── chat.ts
+│       ├── platform.ts
+│       └── settings.ts
+├── .env.example
+├── index.html
+├── package.json
+└── vite.config.ts
+```
+
+---
+
+## Roadmap
+
+- [ ] **Twitch live** — tmi.js IRC WebSocket (no auth needed for read)
+- [ ] **Kick live** — Pusher WebSocket (public channels)
+- [ ] **X live** — API v2 filtered stream or search polling
+- [ ] **Sound alerts** — Web Audio API for sub/raid notifications
+- [ ] **Multi-channel** — connect multiple channels per platform
+- [ ] **Message pinning** — persistent pinned messages at feed top
+- [ ] **Clip detection** — auto-detect "clip it" spikes
 
 ---
 
 ## License
 
-MIT
+MIT — see [LICENSE](./LICENSE)
 
 ---
 
@@ -181,4 +274,7 @@ Built for the **[MarketBubble $10k Vibe Code Challenge](https://x.com/marketbubb
 
 *StreamVault — One window. Every voice.*
 
+<img src="assets/logo.svg" width="36" alt="" />
+
 </div>
+```
