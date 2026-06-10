@@ -7,7 +7,7 @@ import { OBSMode } from "./pages/OBSMode";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/obs" element={<OBSMode />} />
