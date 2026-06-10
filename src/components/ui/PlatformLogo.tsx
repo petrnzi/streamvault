@@ -1,5 +1,7 @@
 import type { Platform } from "@/types";
 
+const BASE = import.meta.env.BASE_URL;
+
 interface Props {
   platform: Platform;
   size?: number;
@@ -7,7 +9,7 @@ interface Props {
 }
 
 export function PlatformLogo({ platform, size = 16, className }: Props) {
-  const src = `../../../public/assets/logo-${platform}.svg`;
+  const src = `${BASE}assets/logo-${platform}.svg`;
   const alt = platform === "x" ? "X (Twitter)" : platform.charAt(0).toUpperCase() + platform.slice(1);
 
   return (
