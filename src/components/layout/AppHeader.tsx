@@ -26,14 +26,12 @@ export function AppHeader({ statuses, latency, onOpenSettings, onOpenObs }: Prop
 
   return (
     <header className="relative flex h-[52px] flex-shrink-0 items-center border-b border-border-subtle bg-surface px-5">
-
-      {/* Left: logo-white.svg with name */}
       <div className="flex items-center gap-3">
         <img
-          src="/assets/logo-white.svg"
+          src={`${import.meta.env.BASE_URL}assets/logo-white.svg`}
           alt="StreamVault"
-          height={58}
-          style={{ height: 58, width: "auto" }}
+          height={38}
+          style={{ height: 38, width: "auto" }}
           draggable={false}
         />
         <span className="h-4 w-px bg-border-subtle" />
@@ -43,7 +41,6 @@ export function AppHeader({ statuses, latency, onOpenSettings, onOpenObs }: Prop
         </span>
       </div>
 
-      {/* Center: platform status with logos */}
       <div className="absolute left-1/2 flex -translate-x-1/2 items-center gap-5">
         {statuses.map((s) => {
           const meta = PLATFORM_META[s.platform];
@@ -73,7 +70,6 @@ export function AppHeader({ statuses, latency, onOpenSettings, onOpenObs }: Prop
         })}
       </div>
 
-      {/* Right: latency + settings + OBS */}
       <div className="ml-auto flex items-center gap-2">
         <span
           className="inline-flex items-center rounded-full border border-border-subtle bg-elevated px-2 py-0.5 font-mono text-[11px]"
