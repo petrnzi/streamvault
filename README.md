@@ -11,7 +11,7 @@
 
 <br/>
 
-### [▶ Live Demo](https://petrnzi.github.io/streamvault/)
+### [Live Demo](https://petrnzi.github.io/streamvault/)
 
 <br/>
 
