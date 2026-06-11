@@ -7,7 +7,7 @@
 <br/>
 <br/>
 
-![StreamVault Demo](public/assets/video.gif)
+![StreamVault Demo](public/assets/demo.webp)
 
 <br/>
 
