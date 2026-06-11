@@ -7,7 +7,7 @@
 <br/>
 <br/>
 
-https://github.com/user-attachments/assets/live-demo.mp4
+![StreamVault Demo](public/assets/video.gif)
 
 <br/>
 
